@@ -80,40 +80,46 @@ def create_file(ev_chances:bool,file_name:str,chset:str,psw_count:int,length:int
             for i in range(psw_count):
                 f.write(generate_ev(length)+"\n")
     else:
-        with open(file_name,"w")as f:
+        with open(file_name+".txt","w")as f:
             for i in range(psw_count):
                 f.write(generate_gen(chset,length)+"\n")
 def generate()->None:
     charset = ""
     a = None
-    if ccvar.get()=="on" :
+
+    if ccvar.get() == "on":
         charset = custom_entry.get()
         if charset:
-            a = Thread(target=create_file,args=(False,"Wordlist",charset,int(nbr_entry.get()),int(len_entry.get())))
+            a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
         else:
-            b = messagebox.showerror(title="Charset Error", message="You Must Have a Charset !")
+            messagebox.showerror(title="Charset Error", message="You Must Have a Charset!")
+            return
     else:
-        if ulvar.get()=="on":
-            charset+=Uletrs
-        if llvar.get()=="on":
-            charset+=Lletrs
-        if nuvar.get()=="on":
-            charset+=Nums
-        if syvar.get()=="on":
-            charset+=Symbols
-        if evvar.get()=="on" and ev.cget("state")=="normal":
-            a = Thread(target=create_file,args=(True,"Wordlist",charset,int(nbr_entry.get()),int(len_entry.get())))
+        if ulvar.get() == "on":
+            charset += Uletrs
+        if llvar.get() == "on":
+            charset += Lletrs
+        if nuvar.get() == "on":
+            charset += Nums
+        if syvar.get() == "on":
+            charset += Symbols
+        if evvar.get() == "on" and ev.cget("state") == "normal":
+            a = Thread(target=create_file, args=(True, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
         else:
-            a = Thread(target=create_file,args=(False,"Wordlist",charset,int(nbr_entry.get()),int(len_entry.get())))
+            a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
+
     if a:
-        try:
-            state_label.configure(text=f"Progress : Working on it ...",text_color="yellow")
-            b = time()
-            a.start()
-            c = time()
-            state_label.configure(text=f"Progress : Done in {c-b} seconds ! ",text_color="#00FF00")
-        except Exception as e :
-            state_label.configure(text = f"Error {e}" , text_color="red")
+        state_label.configure(text=f"Progress: Working on it...", text_color="yellow")
+        start_time = time()
+        a.start()
+        def check_thread() :
+            if a.is_alive() :
+                root.after(100, check_thread)
+            else:
+                end_time = time()
+                state_label.configure(text=f"Progress: Done in {end_time - start_time:.2f} seconds!", text_color="#00FF00")
+        root.after(100, check_thread)
+
 # global variables
 Lletrs:str = "abcdefghijklmnopqrstuvwxyz"
 Uletrs:str = Lletrs.upper()
@@ -122,6 +128,9 @@ Symbols:str = ",;:!@-&_*."
 length:int = 8
 root = ctk.CTk()
 root.title("Random Wordlist Generator")
+root.resizable(False,True)
+root.after(5000, lambda:print("hello"))
+root.iconbitmap("./assets/logo.ico")
 #title
 title_lab = ctk.CTkLabel(root,text="Random Wordlist Generator",font=("",30))
 title_lab.pack(pady = (10,20),padx = 20)
