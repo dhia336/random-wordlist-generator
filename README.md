@@ -34,6 +34,6 @@ you'll see the progress status at the bottom and the work time of the generation
 # Download
 
 - ## windows
-  [Wordlist generator.exe](https://www.mediafire.com/file/cmgwkssbivrqvno/WORDLIST_GENERATOR.zip/file)
+  <!--[Wordlist generator.exe](https://www.mediafire.com/file/cmgwkssbivrqvno/WORDLIST_GENERATOR.zip/file) -->
 - ## other
   if you have python installed install the required libraries and it should run by running main\.py script in the source code
