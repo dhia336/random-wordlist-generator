@@ -57,7 +57,7 @@ def charset_event():
 def choose_dir():
     path = ctk.filedialog.askdirectory(title="Output path")
     if path:
-        save_entry.delete(0,len(save_entry.get())-1)
+        save_entry.delete(0,len(save_entry.get()))
         save_entry.insert(0,path)
 def generate_ev(length)->str:
 # generate uppercase alphanumeric passwords with even chances for numbers and letters(for personal use , i need it)
@@ -75,25 +75,24 @@ def generate_gen(charset:str,length:int)->str:
     return "".join(choices(charset,k=length))
 
 def create_file(ev_chances:bool,file_name:str,chset:str,psw_count:int,length:int)->None:
+    path = save_entry.get()
     if ev_chances and chset == Uletrs+Nums:
-        with open(file_name+".txt","w")as f:
+        with open(path+r'/'+file_name+".txt","w")as f:
             for i in range(psw_count):
                 f.write(generate_ev(length)+"\n")
     else:
-        with open(file_name+".txt","w")as f:
+        with open(path+r'/'+file_name+".txt","w")as f:
             for i in range(psw_count):
                 f.write(generate_gen(chset,length)+"\n")
 def generate()->None:
     charset = ""
     a = None
-
     if ccvar.get() == "on":
         charset = custom_entry.get()
         if charset:
             a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
         else:
             messagebox.showerror(title="Charset Error", message="You Must Have a Charset!")
-            return
     else:
         if ulvar.get() == "on":
             charset += Uletrs
@@ -129,7 +128,6 @@ length:int = 8
 root = ctk.CTk()
 root.title("Random Wordlist Generator")
 root.resizable(False,True)
-root.after(5000, lambda:print("hello"))
 root.iconbitmap("./assets/logo.ico")
 #title
 title_lab = ctk.CTkLabel(root,text="Random Wordlist Generator",font=("",30))
@@ -156,7 +154,7 @@ nu.pack(side = ctk.LEFT,padx = 10,pady = 5)
 sy = ctk.CTkCheckBox(options_frame,text="Symbols",variable=syvar, onvalue="on", offvalue="off",command=even_ch_event)
 sy.pack(side = ctk.LEFT,padx = 10,pady = 5)
 ev = ctk.CTkCheckBox(options_frame,text="Even-Chances",state="disabled",variable=evvar, onvalue="on", offvalue="off")
-ev.pack(side = ctk.LEFT,padx = 10,pady = 5)
+#ev.pack(side = ctk.LEFT,padx = 10,pady = 5)
 cc = ctk.CTkCheckBox(options_frame,text="Custom charset",variable=ccvar, onvalue="on", offvalue="off",command=charset_event)
 cc.pack(side = ctk.LEFT,padx = 10,pady = 5)
 #############
@@ -198,5 +196,3 @@ def main() ->None:
     root.mainloop()
 if __name__=="__main__":
     main()
-# DONE !
-# ENJOY !
