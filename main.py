@@ -5,6 +5,25 @@ import os
 from threading import Thread
 from tkinter import messagebox
 # Functions
+def is_numer_only(ch):
+    a = "0123456789"
+    for i in ch:
+        if i not in a:
+            return False
+    else : return True
+
+def no_error():
+    if not os.path.exists(save_entry.get()):
+        messagebox.showerror("path error","Incorrect output Path")
+        return False
+    elif is_numer_only(nbr_entry.get())==False:
+        messagebox.showerror("number","password count must be a number")
+        return False
+    elif is_numer_only(len_entry.get())==False:
+        messagebox.showerror("number","password length must be a number")
+        return False
+    return True
+
 def even_ch_event():
     if ulvar.get() == "on" and nuvar.get() =="on" and syvar.get()=="off" and llvar.get()=="off":
         ev.configure(state = "normal")
@@ -85,40 +104,44 @@ def create_file(ev_chances:bool,file_name:str,chset:str,psw_count:int,length:int
             for i in range(psw_count):
                 f.write(generate_gen(chset,length)+"\n")
 def generate()->None:
-    charset = ""
-    a = None
-    if ccvar.get() == "on":
-        charset = custom_entry.get()
-        if charset:
+    if no_error():
+        charset = ""
+        a = None
+        if ccvar.get() == "on":
+            charset = custom_entry.get()
             a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
         else:
-            messagebox.showerror(title="Charset Error", message="You Must Have a Charset!")
-    else:
-        if ulvar.get() == "on":
-            charset += Uletrs
-        if llvar.get() == "on":
-            charset += Lletrs
-        if nuvar.get() == "on":
-            charset += Nums
-        if syvar.get() == "on":
-            charset += Symbols
-        if evvar.get() == "on" and ev.cget("state") == "normal":
-            a = Thread(target=create_file, args=(True, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
-        else:
-            a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
-
-    if a:
-        state_label.configure(text=f"Progress: Working on it...", text_color="yellow")
-        start_time = time()
-        a.start()
-        def check_thread() :
-            if a.is_alive() :
-                root.after(100, check_thread)
+            if ulvar.get() == "on":
+                charset += Uletrs
+            if llvar.get() == "on":
+                charset += Lletrs
+            if nuvar.get() == "on":
+                charset += Nums
+            if syvar.get() == "on":
+                charset += Symbols
+            if evvar.get() == "on" and ev.cget("state") == "normal":
+                a = Thread(target=create_file, args=(True, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
             else:
-                end_time = time()
-                state_label.configure(text=f"Progress: Done in {end_time - start_time:.2f} seconds!", text_color="#00FF00")
-        root.after(100, check_thread)
-
+                a = Thread(target=create_file, args=(False, "Wordlist", charset, int(nbr_entry.get()), int(len_entry.get())))
+                
+        if charset :
+            if a :
+                try :
+                    state_label.configure(text=f"Progress: Working on it...", text_color="yellow")
+                    start_time = time()
+                    a.start()
+                    def check_thread() :
+                        if a.is_alive() :
+                            root.after(100, check_thread)
+                        else:
+                            end_time = time()
+                            state_label.configure(text=f"Progress: Done in {end_time - start_time:.2f} seconds!", text_color="#00FF00")
+                    root.after(100, check_thread)
+                    messagebox.showinfo("Done","Generated successfully !")
+                except Exception as e:
+                    messagebox.showerror(title="Error", message=f"{e}")
+        else:
+            messagebox.showerror(title="Charset Error", message="You Must Have a Charset ! ")
 # global variables
 Lletrs:str = "abcdefghijklmnopqrstuvwxyz"
 Uletrs:str = Lletrs.upper()
@@ -174,7 +197,7 @@ nbr_entry.pack(side = ctk.LEFT)
 #############
 pwd_length_label = ctk.CTkLabel(pwd_count_frame,text="Length of each password : ",font=("",15))
 pwd_length_label.pack(side = ctk.LEFT,padx = 10,pady = 5)
-len_entry = ctk.CTkEntry(pwd_count_frame,placeholder_text=100000,width=40)
+len_entry = ctk.CTkEntry(pwd_count_frame,placeholder_text=8,width=40)
 len_entry.insert(0,"8")
 len_entry.pack(side = ctk.LEFT,padx = (0,5))
 #############
@@ -182,8 +205,7 @@ save_frame = ctk.CTkFrame(root)
 save_frame.pack(pady = 5)
 output_label = ctk.CTkLabel(save_frame,text="Output : ",font=("",15))
 output_label.pack(side = ctk.LEFT,padx = 10,pady = 5)
-save_entry = ctk.CTkEntry(save_frame,placeholder_text=os.getcwd(),width=400)
-save_entry.insert(0,os.getcwd())
+save_entry = ctk.CTkEntry(save_frame,placeholder_text="Choose an output folder",width=400)
 save_entry.pack(side = ctk.LEFT,padx = 10)
 save_button = ctk.CTkButton(save_frame,text="Choose output folder",command=choose_dir)
 save_button.pack(side = ctk.LEFT,padx = 10)
