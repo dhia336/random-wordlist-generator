@@ -1,6 +1,7 @@
 # Description
 
 this is a desktop app that can be used to generate file with a list of passwords of random combinations or letters , numbers or symbols or any custom charset you choose with a specefic length for passwords.
+this has multiple use cases and i personnaly use it for hashcat .
 
 # Usage
 
