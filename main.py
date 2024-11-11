@@ -138,6 +138,8 @@ def generate()->None:
                             state_label.configure(text=f"Progress: Done in {end_time - start_time:.2f} seconds!", text_color="#00FF00")
                     root.after(100, check_thread)
                     messagebox.showinfo("Done","Generated successfully !")
+                    with open("assets/last.txt","w") as f :
+                        f.write(save_entry.get())
                 except Exception as e:
                     messagebox.showerror(title="Error", message=f"{e}")
         else:
@@ -206,6 +208,9 @@ save_frame.pack(pady = 5)
 output_label = ctk.CTkLabel(save_frame,text="Output : ",font=("",15))
 output_label.pack(side = ctk.LEFT,padx = 10,pady = 5)
 save_entry = ctk.CTkEntry(save_frame,placeholder_text="Choose an output folder",width=400)
+if os.path.isfile("assets/last.txt"):
+    with open("assets/last.txt","r") as f:
+        save_entry.insert(0,f.read())
 save_entry.pack(side = ctk.LEFT,padx = 10)
 save_button = ctk.CTkButton(save_frame,text="Choose output folder",command=choose_dir)
 save_button.pack(side = ctk.LEFT,padx = 10)
